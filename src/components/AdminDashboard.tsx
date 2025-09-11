@@ -42,7 +42,7 @@ const AdminDashboard: React.FC = () => {
 
   // ✅ Fetch data
   useEffect(() => {
-    fetch('http://localhost:5000/api/signups')
+    fetch('http://82.29.165.42:5000/api/signups')
       .then(async (res) => {
         if (!res.ok) {
           const err = await res.text();
