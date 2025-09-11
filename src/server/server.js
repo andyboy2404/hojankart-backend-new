@@ -2,44 +2,50 @@ import express from 'express';
 import cors from 'cors';
 import mysql from 'mysql';
 import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
-dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ MySQL Connection
-const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME
-});
-
-db.connect((err) => {
-  if (err) {
-    console.error('❌ MySQL Connection Failed:', err);
-  } else {
-    console.log('✅ Connected to MySQL');
-  }
+// ✅ MySQL Pool Setup
+const db = mysql.createPool({
+  host: 'srv1404.hstgr.io',
+  port: 3306,
+  user: 'u647779144_bhojankart',
+  password: 'Dxcqwerty@123',
+  database: 'u647779144_bhojankart',
+  connectionLimit: 10,
 });
 
 // ✅ Optional: Configure Email Transporter
-// const transporter = nodemailer.createTransport({
-//   service: 'gmail',
-//   auth: {
-//     user: 'your_email@gmail.com',
-//     pass: 'your_gmail_app_password',
-//   },
-// });
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'bhojankart@gmail.com',
+    pass: 'Bhojankart2025NJ*', // Use app password here
+  },
+});
+
+// ✅ Health Check
+app.get('/api/test', (req, res) => {
+  res.send('✅ API is up and responding!');
+});
+
+// ✅ Admin API: Get all signups
+app.get('/api/signups', (req, res) => {
+  db.query('SELECT * FROM bhojankart_signups ORDER BY id DESC', (err, results) => {
+    if (err) {
+      console.error('❌ Error fetching signups:', err);
+      return res.status(500).json({ message: 'Database error', error: err });
+    }
+    res.status(200).json(results);
+  });
+});
 
 // ✅ Bulk Enquiry Endpoint
-app.post('/api/bulk-enquiry', (req, res) => {
+app.post('/bulk-enquiry', (req, res) => {
   const data = req.body;
-
-  console.log('📩 Received Enquiry:', data); // Debug log
+  console.log('📩 Received Enquiry:', data);
 
   const sql = `
     INSERT INTO bulk_enquiries
@@ -68,36 +74,146 @@ app.post('/api/bulk-enquiry', (req, res) => {
       return res.status(500).send('Database error');
     }
 
-    console.log('✅ Data inserted into DB');
+    console.log('✅ Bulk enquiry inserted into DB');
+    res.status(200).send('Success');
 
-    // ✅ Optional: Send confirmation email
-    // const mailOptions = {
-    //   from: 'your_email@gmail.com',
-    //   to: 'recipient@example.com',
-    //   subject: 'New Bulk Enquiry Submitted',
-    //   text: `New Enquiry:\n\n${JSON.stringify(data, null, 2)}`
-    // };
+    // Uncomment to send email notification
+    /*
+    const mailOptions = {
+      from: 'bhojankart@gmail.com',
+      to: 'recipient@example.com',
+      subject: 'New Bulk Enquiry Submitted',
+      text: `New Enquiry:\n\n${JSON.stringify(data, null, 2)}`
+    };
 
-    // transporter.sendMail(mailOptions, (emailErr, info) => {
-    //   if (emailErr) {
-    //     console.error('❌ Email Error:', emailErr);
-    //     return res.status(500).send('Email failed');
-    //   }
-
-    //   console.log('📧 Email sent:', info.response);
-    // });
-
-    return res.status(200).send('Success'); // Always send a response!
+    transporter.sendMail(mailOptions, (emailErr, info) => {
+      if (emailErr) {
+        console.error('❌ Email Error:', emailErr);
+        return;
+      }
+      console.log('📧 Email sent:', info.response);
+    });
+    */
   });
 });
 
-// ✅ Health Check
-app.get('/api/test', (req, res) => {
-  res.send('✅ API is up and responding!');
+// ✅ Update Signup Endpoint
+app.put('/api/signups/:id', (req, res) => {
+  const id = req.params.id;
+  const {
+    fullName,
+    email,
+    phone,
+    meals,
+    duration,
+    dob,
+    mealStartDate,
+    isConvertedLeadToBussiness
+  } = req.body;
+
+  const sql = `UPDATE bhojankart_signups SET fullName = ?, email = ?, phone = ?, meals = ?, duration = ?, dob = ?, mealStartDate = ?, isConvertedLeadToBussiness = ? WHERE id = ?`;
+  const values = [fullName, email, phone, meals, duration, dob, mealStartDate, isConvertedLeadToBussiness ? 1 : 0, id];
+
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      console.error('❌ Error updating signup:', err);
+      return res.status(500).json({ message: 'Database error', error: err });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Signup not found' });
+    }
+    res.status(200).json({ message: 'Signup updated successfully!' });
+  });
+});
+// ✅ Form Submission Endpoint
+app.post("/submitForm", (req, res) => {
+  const {
+    fullName,
+    dob,
+    age,
+    gender,
+    email,
+    phone,
+    profession,
+    meals,
+    duration,
+    differentPlan,
+    lunchPlan,
+    dinnerPlan,
+    combinedPlan,
+    lunchAddress,
+    lunchLandmark,
+    dinnerAddress,
+    dinnerLandmark,
+    extraRoti,
+    additionalInfo,
+  } = req.body;
+
+  const userId = `${fullName.substring(0, 4)}${phone.slice(-4)}`;
+  const mealsStr = Array.isArray(meals) ? meals.join(", ") : "";
+
+  const sql = `
+    INSERT INTO bhojankart_signups 
+    (UserId, fullName, dob, age, gender, email, phone, profession, meals, duration, differentPlan, lunchPlan, dinnerPlan, combinedPlan, lunchAddress, lunchLandmark, dinnerAddress, dinnerLandmark, extraRoti, additionalInfo)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  const values = [
+    userId,
+    fullName,
+    dob,
+    age,
+    gender,
+    email,
+    phone,
+    profession,
+    mealsStr,
+    duration,
+    differentPlan,
+    lunchPlan,
+    dinnerPlan,
+    combinedPlan,
+    lunchAddress,
+    lunchLandmark,
+    dinnerAddress,
+    dinnerLandmark,
+    extraRoti,
+    additionalInfo,
+  ];
+
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      console.error("❌ Error inserting form data:", err);
+      return res.status(500).json({ message: "Database error", error: err });
+    }
+
+    res.status(200).json({
+      message: "Form submitted successfully!",
+      id: result.insertId,
+    });
+
+    // Uncomment to enable email notification
+    /*
+    const mailOptions = {
+      from: 'bhojankart@gmail.com',
+      to: 'anandchourasiya24@gmail.com',
+      subject: 'New Signup Form Submitted',
+      text: `New Signup Form Submission:\n\n${JSON.stringify(req.body, null, 2)}`
+    };
+
+    transporter.sendMail(mailOptions, (emailErr, info) => {
+      if (emailErr) {
+        console.error('❌ Email Error:', emailErr);
+        return;
+      }
+      console.log('📧 Signup Email sent:', info.response);
+    });
+    */
+  });
 });
 
 // ✅ Start Server
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

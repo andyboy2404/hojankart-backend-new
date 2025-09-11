@@ -144,4 +144,55 @@ export const LegalContentMap: Record<string, { title: string; content: React.Rea
       </>
     ),
   },
+'thankYou': {
+  title: 'Thank You',
+  content: (
+    <>
+      <p><strong>🎉 Thank you for joining Bhojankart!</strong></p>
+
+      <p className="mt-4">
+        Your submission has been received successfully. Our team will get in touch with you shortly via the contact details you provided.
+      </p>
+
+      <p className="mt-4">
+        We’re excited to serve you healthy, homestyle vegetarian meals that suit your lifestyle.
+      </p>
+
+      <p className="mt-4">
+        If you have any immediate questions or need support, feel free to contact us on WhatsApp or email at{' '}
+        <a
+          href="mailto:support@bhojankart.in"
+          style={{ color: 'blue', textDecoration: 'underline' }}
+        >
+          support@bhojankart.in
+        </a>.
+      </p>
+
+      <p className="mt-4">
+        Welcome to the Bhojankart family! 🍽️
+      </p>
+    </>
+  ),
+},
+'offerTerms': {
+  title: '🎁 Offer Terms & Conditions:',
+  content: (
+    <>
+      <p>
+        <strong>To avail the First Day Meal Free offer:</strong>
+      </p>
+
+      <ul className="list-disc pl-5 space-y-1 mt-4">
+        <li>This offer is valid only on the 26-day subscription Plan.</li>
+        <li>The free meal will be delivered on Day 1 of your plan.</li>
+        <li>Applicable for first-time subscribers only.</li>
+        <li>BhojanKart reserves the right to modify or cancel the offer at any time.</li>
+      </ul>
+
+      <p className="mt-4">
+        👉 Start your subscription today and experience homemade goodness from Day 1 — on us!
+      </p>
+    </>
+  ),
+},
 };

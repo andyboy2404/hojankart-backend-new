@@ -104,8 +104,8 @@ const faqData = [
     answer: (<>We aim to make India’s youth healthier and more mindful of what they eat. Bhojankart brings traditional, homely meals within easy reach, satisfying hunger with nutrition, nostalgia, and love.</>),
   },
   {
-  question: `Why should I subscribe to a daily meal plan?`,
-  questionNode: <>Why should I subscribe to a daily meal plan?</>,
+  question: `Why should I subscribe to Bhojankart's daily meal plan?`,
+  questionNode: <>Why should I subscribe to Bhojankart's daily meal plan?</>,
   answer: (
     <ul className="list-disc pl-5 space-y-2">
       <li>

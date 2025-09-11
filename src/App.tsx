@@ -11,24 +11,27 @@ import WhyChooseUs from './components/WhyChooseUs';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import FAQPage from './components/FAQPage';
-// import PromoNavBar from './components/PromonavBar';
+import FoodWastePoster from './components/FoodWastePoster';
+import ChatBox from './components/ChatBox';
+import AdminLogin from './components/AdminLogin';
+import AdminDashboard from './components/AdminDashboard';
 
 const Home = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-  const scrollTo = location.state?.scrollTo;
-  if (scrollTo) {
-    const el = document.getElementById(scrollTo);
-    if (el) {
-      setTimeout(() => {
-        el.scrollIntoView({ behavior: 'smooth' });
-        navigate('.', { replace: true, state: {} });
-      }, 150);
+    const scrollTo = location.state?.scrollTo;
+    if (scrollTo) {
+      const el = document.getElementById(scrollTo);
+      if (el) {
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: 'smooth' });
+          navigate('.', { replace: true, state: {} });
+        }, 150);
+      }
     }
-  }
-}, [location, navigate]);
+  }, [location, navigate]);
 
   return (
     <>
@@ -40,7 +43,14 @@ const Home = () => {
       <WhyChooseUs />
       <SignupForm />
       <section id="contact"><Contact /></section>
+      <FoodWastePoster />
       <Footer />
+
+      {/* Chat Box */}
+      <ChatBox
+        phoneNumber="+917999946052"    // Replace with your actual phone number
+        whatsappNumber="917999946052" // Replace with your actual WhatsApp number
+      />
     </>
   );
 };
@@ -48,22 +58,18 @@ const Home = () => {
 function App() {
   return (
     <BrowserRouter>
-     
-     {/* 🔶 Top Banner */}
-     {/* <div>
-<PromoNavBar />
-</div> */}
-
-      {/* 🔶 Sticky Navbar */}
-<div className="sticky top-0 z-50 bg-white shadow-md">
+      {/* Sticky Navbar */}
+      <div className="sticky top-0 z-50 bg-white shadow-md">
         <Navbar />
       </div>
 
-      {/* 🔶 Main Content */}
+      {/* Main Content */}
       <div className="font-sans text-neutral-800">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/faq" element={<FAQPage />} />
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Routes>
       </div>
     </BrowserRouter>

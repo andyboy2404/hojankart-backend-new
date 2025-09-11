@@ -5,20 +5,14 @@ import { Menu, X } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import PromoNavBar from './PromoNavBar';
 import Logo from './Logo';
-import BulkEnquiryPopup from './BulkEnquiryPopup';
+ import BulkEnquiryPopup from './BulkEnquiryPopup';
+import ZohoFormModal from './ZohoFormModal';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  
-const [showBulkPopup, setShowBulkPopup] = useState(false);
-const [showThankYou, setShowThankYou] = useState(false);
 
-const handleBulkSuccess = () => {
-  setShowBulkPopup(false);   // close form
-  setShowThankYou(true);     // show thank you popup
-};
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -62,6 +56,7 @@ const handleBulkSuccess = () => {
     { label: 'Bulk Enquiry', action: () => setIsPopupOpen(true) },
     { label: 'FAQs', to: '/faq' },
     { label: 'Contact', to: '#contact' },
+    { label: 'Admin', action: () => navigate('/admin') },
   ];
 
   return (
@@ -180,6 +175,8 @@ const handleBulkSuccess = () => {
 
       {/* Popup */}
       <BulkEnquiryPopup open={isPopupOpen} onClose={() => setIsPopupOpen(false)} />
+      {/* <ZohoFormModal isOpen={showModal} onClose={() => setShowModal(false)} /> */}
+
     </>
   );
 };

@@ -74,14 +74,14 @@ const Gallery: React.FC = () => {
             {/* Navigation buttons */}
             <button
               onClick={prevSlide}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white /20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white /30 transition-colors"
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors"
               aria-label="Previous slide"
             >
               <ChevronLeft size={24} />
             </button>
             <button
               onClick={nextSlide}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white /20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white /30 transition-colors"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors"
               aria-label="Next slide"
             >
               <ChevronRight size={24} />

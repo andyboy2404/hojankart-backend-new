@@ -1,6 +1,8 @@
 import React, { useState, ReactNode } from 'react';
 import { LegalContentMap } from './LegalContentMap';
 import FormModal from './FormModal';
+import { handleSignUpSubmit } from '../common/formHandlers';
+// import ZohoFormModal from './ZohoFormJoinBhojanKartModal';
 
 
 const Modal: React.FC<{ onClose: () => void; children: ReactNode }> = ({ onClose, children }) => (
@@ -50,6 +52,8 @@ const Modals: React.FC<{
 
 const SignupForm: React.FC = () => {
  const [showModal, setShowModal] = useState(false);
+   const [isPopupOpen, setIsPopupOpen] = useState(false);
+ 
 const [popupContent, setPopupContent] = useState<{ title: string; description: ReactNode } | null>(null);
 const [modalContent, setCommonModal] = useState<null | {
     title: string;
@@ -65,59 +69,7 @@ const [modalContent, setCommonModal] = useState<null | {
  
    const closeModal = () => setCommonModal(null);
 
-  const handleSubmitSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-
-    const fullName = formData.get("full_name") as string;
-    const startDate = formData.get("start_date") as string;
-    const plan = formData.get("plan") as string;
-    const timing = formData.getAll("timing");  // ✅ This line fixes the issues
-    const gender = formData.get("gender") as string;
-    const email = formData.get("email") as string;
-    const phone = formData.get("phone") as string;
-    const age = formData.get("age") as string;
-    const userType = formData.get("user_type") as string;
-    const address = formData.get("address") as string;
-    const landmark = formData.get("landmark") as string;
-    const preferences = formData.get("preferences") as string;
-    const referral = formData.get("referral") as string;
-
-
-    // ✅ Create JSON object
-    const formJson = {
-      full_name: fullName,
-      start_date: startDate,
-      plan,
-      timing,
-      gender,
-      email,
-      phone,
-      age,
-      user_type: userType,
-      address,
-      landmark,
-      preferences,
-      referral,
-    };
-
-
-    try {
-      // ✅ Log or alert the final JSON
-      console.log("Form JSON:", formJson);
-      alert(JSON.stringify(formJson, null, 2));
-
-      //  alert("Form submitted! Data: " + JSON.stringify(formData1, null, 2));
-      alert(JSON.stringify({ fullName, startDate, plan, timing, userType }, null, 2));
-
-      //  const response = await axios.post("http://localhost:5000/submitForm", formJson);
-      // alert(response.data.message);
-    } catch (error) {
-      alert("Error submitting form");
-      console.error(error);
-    }
-  };
-
+ 
   const closePopup = () => {
     setPopupContent(null);
   };
@@ -155,9 +107,17 @@ const [modalContent, setCommonModal] = useState<null | {
 <FormModal
   isOpen={showModal}
   onClose={() => setShowModal(false)}
-  onSubmit={handleSubmitSignUp}
-  openCommonModal={openCommonModal} // ✅ pass this
+  onSubmit={(e) =>
+    handleSignUpSubmit(
+      e,
+      () => openCommonModal("thankYou"), // ✅ open Thank You modal
+      () => setShowModal(false)          // ✅ close current form modal
+    )
+  }
+  openCommonModal={openCommonModal}
 />
+      {/* <ZohoFormModal isOpen={isPopupOpen} onClose={() => setIsPopupOpen(false)} /> */}
+
          {/* Common Popup Modal */}
         {popupContent && (
           <Modal onClose={closePopup}>

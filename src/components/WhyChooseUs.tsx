@@ -1,7 +1,10 @@
-import React from 'react';
-import { Clock, Heart, RotateCcw, Shield, Wheat } from 'lucide-react';
+import React, { useState, ReactNode } from 'react';
+import { Clock, Heart, RotateCcw, Shield, Wheat, Calendar, RefreshCcw  } from 'lucide-react';
+import ZohoFormModal from './ZohoFormJoinBhojanKartModal';
 
 const WhyChooseUs: React.FC = () => {
+     const [isPopupOpen, setIsPopupOpen] = useState(false);
+  
   const reasons = [
     {
       icon: <Shield className="h-8 w-8 text-primary-600" />,
@@ -28,6 +31,16 @@ const WhyChooseUs: React.FC = () => {
       title: 'Handcrafted by passionate cooks',
       description: 'Each meal is prepared with care and attention to detail',
     },
+    {
+  icon: (
+   <div className="relative inline-block w-8 h-8">
+  <Calendar className="text-primary-600 w-8 h-8" />
+  <RefreshCcw className="text-green-700 w-4 h-4 absolute bottom-0 right-0 bg-white rounded-full" />
+</div>
+  ),
+  title: 'Free Unlimited Rescheduling',
+  description: 'Reschedule your meal anytime with a 24-hour heads-up (T&C Apply)',
+},
   ];
 
   return (
@@ -70,15 +83,21 @@ const WhyChooseUs: React.FC = () => {
           ))}
         </div>
         
-        <div className="mt-16 text-center">
-          <a 
-            href="#signup" 
-            className="inline-block px-8 py-3 bg-green-800 text-white font-medium rounded-lg shadow-md hover:bg-primary-700 transition-colors"
-          >
-            Experience the Difference
-          </a>
-        </div>
+       <div className="mt-16 text-center">
+  <a 
+    onClick={e => {
+      e.preventDefault();
+      setIsPopupOpen(true);
+    }}
+    className="inline-block px-8 py-3 bg-green-800 text-white font-medium rounded-lg shadow-md hover:bg-primary-700 transition-colors cursor-pointer"
+  >
+    Experience the Difference
+  </a>
+</div>
+              <ZohoFormModal isOpen={isPopupOpen} onClose={() => setIsPopupOpen(false)} />
+
       </div>
+      
     </section>
   );
 };
