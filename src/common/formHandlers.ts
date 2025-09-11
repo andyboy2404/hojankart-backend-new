@@ -58,7 +58,7 @@ export async function handleSignUpSubmit(
 
   try {
     console.log("Submitting Form Data:", formJson);
-    await axios.post("http://localhost:5000/submitForm", formJson);
+    await axios.post("http://82.29.165.42:5000/submitForm", formJson);
 
     // Close the form modal before showing thank you modal
     closeFormModal();         // ✅ close the form modal
