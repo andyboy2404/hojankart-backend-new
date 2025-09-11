@@ -63,7 +63,7 @@ const BulkEnquiryPopup: React.FC<BulkEnquiryPopupProps> = ({ open, onClose }) =>
   try {
     console.log("Submitting Form Data:", payload);
 debugger;
-    await axios.post("http://localhost:5000/bulk-enquiry", payload, {
+    await axios.post("http://82.29.165.42:5000/bulk-enquiry", payload, {
       headers: {
         "Content-Type": "application/json"
       }
