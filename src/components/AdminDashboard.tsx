@@ -208,7 +208,7 @@ const AdminDashboard: React.FC = () => {
                     setEditId(null);
                     setEditData(null);
                     setLoading(true);
-                    const newData = await fetch('http://localhost:5000/api/signups').then(res => res.json());
+                    const newData = await fetch('http://82.29.165.42:5000/api/signups').then(res => res.json());
                     setSignups(newData);
                     setLoading(false); // ✅ Fix: show the table again
                   } catch (err: any) {
