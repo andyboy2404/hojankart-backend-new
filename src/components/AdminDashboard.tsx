@@ -32,7 +32,7 @@ const AdminDashboard: React.FC = () => {
   // ✅ Format date
   function formatDate(dateStr: string) {
     if (!dateStr) return '-';
-    const d = new Date(dateStr);/api
+    const d = new Date(dateStr);
     if (isNaN(d.getTime())) return dateStr;
     const day = d.getDate().toString().padStart(2, '0');
     const month = d.toLocaleString('en-US', { month: 'short' });
