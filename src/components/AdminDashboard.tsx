@@ -32,7 +32,7 @@ const AdminDashboard: React.FC = () => {
   // ✅ Format date
   function formatDate(dateStr: string) {
     if (!dateStr) return '-';
-    const d = new Date(dateStr);
+    const d = new Date(dateStr);/api
     if (isNaN(d.getTime())) return dateStr;
     const day = d.getDate().toString().padStart(2, '0');
     const month = d.toLocaleString('en-US', { month: 'short' });
@@ -192,7 +192,7 @@ const AdminDashboard: React.FC = () => {
                       mealStartDate: editData.mealStartDate || '',
                       isConvertedLeadToBussiness: !!editData.isConvertedLeadToBussiness,
                     };
-                    const res = await fetch(`http://localhost:5000/api/signups/${editId}`, {
+                    const res = await fetch(`http://82.29.165.42:5000/api/signups/${editId}`, {
                       method: 'PUT',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify(updatePayload),
