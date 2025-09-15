@@ -13,9 +13,7 @@ app.use(express.json());
 // ✅ Start Server
 const PORT = 5000; const options = { key: fs.readFileSync('/etc/letsencrypt/live/srv1003983.hstgr.cloud/privkey.pem'), cert: fs.readFileSync('/etc/letsencrypt/live/srv1003983.hstgr.cloud/fullchain.pem') }; https.createServer(options, app).listen(PORT, '0.0.0.0', () => { console.log(`🚀 HTTPS server running on https://srv1003983.hstgr.cloud:${PORT}`); });
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+
 
 // ✅ MySQL Pool Setup
 const db = mysql.createPool({
