@@ -213,5 +213,15 @@ app.post("/submitForm", (req, res) => {
 });
 
 // ✅ Start Server
-app.listen(5000, '0.0.0.0', () => { console.log('🚀 Server running on http://0.0.0.0:5000'); });
+const https = require('https');
+const fs = require('fs');
+const app = require('./app'); // Replace with your actual Express app
 
+const options = {
+  key: fs.readFileSync('/etc/letsencrypt/live/srv1003983.hstgr.cloud/privkey.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/srv1003983.hstgr.cloud/fullchain.pem')
+};
+
+https.createServer(options, app).listen(5000, '0.0.0.0', () => {
+  console.log('🚀 HTTPS server running on https://srv1003983.hstgr.cloud:5000');
+});
