@@ -2,6 +2,19 @@ import express from 'express';
 import cors from 'cors';
 import mysql from 'mysql';
 import nodemailer from 'nodemailer';
+import https from 'https';
+import fs from 'fs';
+//  const app = require('./app'); // Replace with your actual Express app
+
+ const app = express();
+app.use(cors());
+app.use(express.json());
+
+// ✅ Start Server
+const PORT = 5000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+});
 
 const app = express();
 app.use(cors());
@@ -212,16 +225,3 @@ app.post("/submitForm", (req, res) => {
   });
 });
 
-// ✅ Start Server
-const https = require('https');
-const fs = require('fs');
-const app = require('./app'); // Replace with your actual Express app
-
-const options = {
-  key: fs.readFileSync('/etc/letsencrypt/live/srv1003983.hstgr.cloud/privkey.pem'),
-  cert: fs.readFileSync('/etc/letsencrypt/live/srv1003983.hstgr.cloud/fullchain.pem')
-};
-
-https.createServer(options, app).listen(5000, '0.0.0.0', () => {
-  console.log('🚀 HTTPS server running on https://srv1003983.hstgr.cloud:5000');
-});
