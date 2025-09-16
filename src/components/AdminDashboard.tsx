@@ -42,7 +42,7 @@ const AdminDashboard: React.FC = () => {
 
   // ✅ Fetch data
   useEffect(() => {
-    fetch('https://82.29.165.42:5000/api/signups')
+    fetch('https://srv1003983.hstgr.cloud:5000/api/signups')
       .then(async (res) => {
         if (!res.ok) {
           const err = await res.text();
@@ -192,7 +192,7 @@ const AdminDashboard: React.FC = () => {
                       mealStartDate: editData.mealStartDate || '',
                       isConvertedLeadToBussiness: !!editData.isConvertedLeadToBussiness,
                     };
-                    const res = await fetch(`http://82.29.165.42:5000/api/signups/${editId}`, {
+                    const res = await fetch(`http://https://srv1003983.hstgr.cloud:5000/api/signups/${editId}`, {
                       method: 'PUT',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify(updatePayload),
@@ -208,7 +208,7 @@ const AdminDashboard: React.FC = () => {
                     setEditId(null);
                     setEditData(null);
                     setLoading(true);
-                    const newData = await fetch('https://82.29.165.42:5000/api/signups').then(res => res.json());
+                    const newData = await fetch('https://srv1003983.hstgr.cloud:5000/api/signups').then(res => res.json());
                     setSignups(newData);
                     setLoading(false); // ✅ Fix: show the table again
                   } catch (err: any) {
