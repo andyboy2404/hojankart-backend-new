@@ -130,7 +130,30 @@ app.put('/api/signups/:id', (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Signup not found' });
     }
-    res.status(200).json({ message: 'Signup updated successfully!' });
+
+    // If isConvertedLeadToBussiness is true, insert into BhojankartUsersList
+    if (isConvertedLeadToBussiness) {
+      // username: first 4 letters of name + last 4 digits of phone
+      const namePart = fullName.replace(/\s+/g, '').substring(0, 4);
+      const phonePart = phone.slice(-4);
+      const username = namePart + phonePart;
+      const password = phone;
+      const fksighnuid = id;
+      const insertUserSql = `INSERT INTO BhojankartUsersList (username, password, fksighnuid) VALUES (?, ?, ?)`;
+      db.query(insertUserSql, [username, password, fksighnuid], (userErr, userResult) => {
+        if (userErr) {
+          // If duplicate entry, ignore, else return error
+          if (userErr.code !== 'ER_DUP_ENTRY') {
+            console.error('❌ Error inserting user:', userErr);
+            return res.status(500).json({ message: 'Database error (user insert)', error: userErr });
+          }
+        }
+        // Success response
+        return res.status(200).json({ message: 'Signup updated and user inserted successfully!' });
+      });
+    } else {
+      res.status(200).json({ message: 'Signup updated successfully!' });
+    }
   });
 });
 // ✅ Form Submission Endpoint
