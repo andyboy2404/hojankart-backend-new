@@ -224,7 +224,7 @@ app.post("/submitForm", (req, res) => {
     });
 
     // Uncomment to enable email notification
-    /*
+    
     const mailOptions = {
       from: 'bhojankart@gmail.com',
       to: 'anandchourasiya24@gmail.com',
@@ -239,7 +239,7 @@ app.post("/submitForm", (req, res) => {
       }
       console.log('📧 Signup Email sent:', info.response);
     });
-    */
+    
   });
 });
 
