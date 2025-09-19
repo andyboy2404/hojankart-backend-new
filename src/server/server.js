@@ -109,18 +109,79 @@ app.post('/bulk-enquiry', (req, res) => {
 app.put('/api/signups/:id', (req, res) => {
   const id = req.params.id;
   const {
+    UserId,
     fullName,
+    dob,
+    age,
+    gender,
     email,
     phone,
+    profession,
     meals,
     duration,
-    dob,
+    differentPlan,
+    lunchPlan,
+    dinnerPlan,
+    combinedPlan,
+    lunchAddress,
+    lunchLandmark,
+    dinnerAddress,
+    dinnerLandmark,
+    extraRoti,
+    additionalInfo,
     mealStartDate,
     isConvertedLeadToBussiness
   } = req.body;
 
-  const sql = `UPDATE bhojankart_signups SET fullName = ?, email = ?, phone = ?, meals = ?, duration = ?, dob = ?, mealStartDate = ?, isConvertedLeadToBussiness = ? WHERE id = ?`;
-  const values = [fullName, email, phone, meals, duration, dob, mealStartDate, isConvertedLeadToBussiness ? 1 : 0, id];
+  const sql = `UPDATE bhojankart_signups SET
+    UserId = ?,
+    fullName = ?,
+    dob = ?,
+    age = ?,
+    gender = ?,
+    email = ?,
+    phone = ?,
+    profession = ?,
+    meals = ?,
+    duration = ?,
+    differentPlan = ?,
+    lunchPlan = ?,
+    dinnerPlan = ?,
+    combinedPlan = ?,
+    lunchAddress = ?,
+    lunchLandmark = ?,
+    dinnerAddress = ?,
+    dinnerLandmark = ?,
+    extraRoti = ?,
+    additionalInfo = ?,
+    mealStartDate = ?,
+    isConvertedLeadToBussiness = ?
+    WHERE id = ?`;
+  const values = [
+    UserId,
+    fullName,
+    dob,
+    age,
+    gender,
+    email,
+    phone,
+    profession,
+    meals,
+    duration,
+    differentPlan,
+    lunchPlan,
+    dinnerPlan,
+    combinedPlan,
+    lunchAddress,
+    lunchLandmark,
+    dinnerAddress,
+    dinnerLandmark,
+    extraRoti,
+    additionalInfo,
+    mealStartDate,
+    isConvertedLeadToBussiness ? 1 : 0,
+    id
+  ];
 
   db.query(sql, values, (err, result) => {
     if (err) {
@@ -156,6 +217,7 @@ app.put('/api/signups/:id', (req, res) => {
     }
   });
 });
+
 // ✅ Form Submission Endpoint
 app.post("/submitForm", (req, res) => {
   const {
