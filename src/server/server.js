@@ -245,63 +245,85 @@ app.post("/submitForm", (req, res) => {
   const userId = `${fullName.substring(0, 4)}${phone.slice(-4)}`;
   const mealsStr = Array.isArray(meals) ? meals.join(", ") : "";
 
-  const sql = `
-    INSERT INTO bhojankart_signups 
-    (UserId, fullName, dob, age, gender, email, phone, profession, meals, duration, differentPlan, lunchPlan, dinnerPlan, combinedPlan, lunchAddress, lunchLandmark, dinnerAddress, dinnerLandmark, extraRoti, additionalInfo)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-
-  const values = [
-    userId,
-    fullName,
-    dob,
-    age,
-    gender,
-    email,
-    phone,
-    profession,
-    mealsStr,
-    duration,
-    differentPlan,
-    lunchPlan,
-    dinnerPlan,
-    combinedPlan,
-    lunchAddress,
-    lunchLandmark,
-    dinnerAddress,
-    dinnerLandmark,
-    extraRoti,
-    additionalInfo,
-  ];
-
-  db.query(sql, values, (err, result) => {
-    if (err) {
-      console.error("❌ Error inserting form data:", err);
-      return res.status(500).json({ message: "Database error", error: err });
+  // Check for existing email or phone
+  const checkSql = `SELECT id FROM bhojankart_signups WHERE email = ? OR phone = ? LIMIT 1`;
+  db.query(checkSql, [email, phone], (checkErr, checkResults) => {
+    if (checkErr) {
+      console.error("❌ Error checking for existing signup:", checkErr);
+      return res.status(500).json({ message: "Database error", error: checkErr });
+    }
+    if (checkResults.length > 0) {
+      return res.status(409).json({ message: "We already have your data. Thank you for signing up!" });
     }
 
-    res.status(200).json({
-      message: "Form submitted successfully!",
-      id: result.insertId,
-    });
+    const sql = `
+      INSERT INTO bhojankart_signups 
+      (UserId, fullName, dob, age, gender, email, phone, profession, meals, duration, differentPlan, lunchPlan, dinnerPlan, combinedPlan, lunchAddress, lunchLandmark, dinnerAddress, dinnerLandmark, extraRoti, additionalInfo)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
 
-    // Uncomment to enable email notification
-    
-    const mailOptions = {
-      from: 'bhojankart@gmail.com',
-      to: 'anandchourasiya24@gmail.com',
-      subject: 'New Signup Form Submitted',
-      text: `New Signup Form Submission:\n\n${JSON.stringify(req.body, null, 2)}`
-    };
+    const values = [
+      userId,
+      fullName,
+      dob,
+      age,
+      gender,
+      email,
+      phone,
+      profession,
+      mealsStr,
+      duration,
+      differentPlan,
+      lunchPlan,
+      dinnerPlan,
+      combinedPlan,
+      lunchAddress,
+      lunchLandmark,
+      dinnerAddress,
+      dinnerLandmark,
+      extraRoti,
+      additionalInfo,
+    ];
 
-    transporter.sendMail(mailOptions, (emailErr, info) => {
-      if (emailErr) {
-        console.error('❌ Email Error:', emailErr);
-        return;
+    db.query(sql, values, (err, result) => {
+      if (err) {
+        console.error("❌ Error inserting form data:", err);
+        return res.status(500).json({ message: "Database error", error: err });
       }
-      console.log('📧 Signup Email sent:', info.response);
+
+      res.status(200).json({
+        message: "Form submitted successfully!",
+        id: result.insertId,
+      });
+
+      // Uncomment to enable email notification
+      // const mailOptions = {
+      //   from: 'anandchourasiya24@gmail.com',
+      //   to: 'anandchourasiya24@gmail.com',
+      //   subject: 'New Signup Form Submitted',
+      //   html: `
+      //     <h2>New Signup Form Submission</h2>
+      //     <table border="1" cellpadding="5" cellspacing="0">
+      //       <tbody>
+      //         ${Object.entries(req.body).map(([key, value]) => `
+      //           <tr>
+      //             <td><strong>${key}</strong></td>
+      //             <td>${Array.isArray(value) ? value.join(', ') : value}</td>
+      //           </tr>
+      //         `).join('')}
+      //       </tbody>
+      //     </table>
+      //   `
+      // };
+
+      // transporter.sendMail(mailOptions, (emailErr, info) => {
+      //   if (emailErr) {
+      //     console.error('❌ Email Error:', emailErr);
+      //     return;
+      //   }
+      //   console.log('📧 Signup Email sent:', info.response);
+      // });
     });
-    
   });
 });
 
