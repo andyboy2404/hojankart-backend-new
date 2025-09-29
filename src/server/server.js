@@ -240,6 +240,7 @@ app.post("/submitForm", (req, res) => {
     dinnerLandmark,
     extraRoti,
     additionalInfo,
+    heardAboutUs,
   } = req.body;
 
   const userId = `${fullName.substring(0, 4)}${phone.slice(-4)}`;
@@ -256,12 +257,15 @@ app.post("/submitForm", (req, res) => {
       return res.status(409).json({ message: "We already have your data. Thank you for signing up!" });
     }
 
-    const sql = `
-      INSERT INTO bhojankart_signups 
-      (UserId, fullName, dob, age, gender, email, phone, profession, meals, duration, differentPlan, lunchPlan, dinnerPlan, combinedPlan, lunchAddress, lunchLandmark, dinnerAddress, dinnerLandmark, extraRoti, additionalInfo)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-
+const sql = `
+  INSERT INTO bhojankart_signups (
+    UserId, fullName, dob, age, gender, email, phone, profession, 
+    meals, duration, differentPlan, lunchPlan, dinnerPlan, combinedPlan, 
+    lunchAddress, lunchLandmark, dinnerAddress, dinnerLandmark, 
+    extraRoti, additionalInfo, heardAboutUs
+  ) 
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`;
     const values = [
       userId,
       fullName,
@@ -283,6 +287,7 @@ app.post("/submitForm", (req, res) => {
       dinnerLandmark,
       extraRoti,
       additionalInfo,
+      heardAboutUs,
     ];
 
     db.query(sql, values, (err, result) => {
@@ -326,4 +331,3 @@ app.post("/submitForm", (req, res) => {
     });
   });
 });
-
