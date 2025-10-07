@@ -109,7 +109,6 @@ app.post('/bulk-enquiry', (req, res) => {
 app.put('/api/signups/:id', (req, res) => {
   const id = req.params.id;
   const {
-    UserId,
     fullName,
     dob,
     age,
@@ -134,7 +133,6 @@ app.put('/api/signups/:id', (req, res) => {
   } = req.body;
 
   const sql = `UPDATE bhojankart_signups SET
-    UserId = ?,
     fullName = ?,
     dob = ?,
     age = ?,
@@ -158,7 +156,6 @@ app.put('/api/signups/:id', (req, res) => {
     isConvertedLeadToBussiness = ?
     WHERE id = ?`;
   const values = [
-    UserId,
     fullName,
     dob,
     age,
@@ -182,6 +179,9 @@ app.put('/api/signups/:id', (req, res) => {
     isConvertedLeadToBussiness ? 1 : 0,
     id
   ];
+
+const formattedSql = mysql.format(sql, values);
+console.log("Executing SQL:", formattedSql);
 
   db.query(sql, values, (err, result) => {
     if (err) {
@@ -212,6 +212,11 @@ app.put('/api/signups/:id', (req, res) => {
         // Success response
         return res.status(200).json({ message: 'Signup updated and user inserted successfully!' });
       });
+    } else {
+      res.status(200).json({ message: 'Signup updated successfully!' });
+    }
+  });
+});
     } else {
       res.status(200).json({ message: 'Signup updated successfully!' });
     }
