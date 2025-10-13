@@ -257,15 +257,15 @@ app.post("/submitForm", (req, res) => {
       return res.status(409).json({ message: "We already have your data. Thank you for signing up!" });
     }
 
-const sql = `
-  INSERT INTO bhojankart_signups (
-    UserId, fullName, dob, age, gender, email, phone, profession, 
-    meals, duration, differentPlan, lunchPlan, dinnerPlan, combinedPlan, 
-    lunchAddress, lunchLandmark, dinnerAddress, dinnerLandmark, 
-    extraRoti, additionalInfo, heardAboutUs
-  ) 
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-`;
+    const sql = `
+      INSERT INTO bhojankart_signups (
+        UserId, fullName, dob, age, gender, email, phone, profession, 
+        meals, duration, differentPlan, lunchPlan, dinnerPlan, combinedPlan, 
+        lunchAddress, lunchLandmark, dinnerAddress, dinnerLandmark, 
+        extraRoti, additionalInfo, heardAboutUs
+      ) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
     const values = [
       userId,
       fullName,
@@ -290,11 +290,21 @@ const sql = `
       heardAboutUs,
     ];
 
+    // Insert into main table
     db.query(sql, values, (err, result) => {
       if (err) {
         console.error("❌ Error inserting form data:", err);
         return res.status(500).json({ message: "Database error", error: err });
       }
+
+      // Insert into temp table as well
+      const tempSql = sql.replace('bhojankart_signups', 'bhojankart_signups_temp');
+      db.query(tempSql, values, (tempErr) => {
+        if (tempErr) {
+          console.error("❌ Error inserting into temp table:", tempErr);
+          // Do not fail the main request if temp insert fails
+        }
+      });
 
       res.status(200).json({
         message: "Form submitted successfully!",
