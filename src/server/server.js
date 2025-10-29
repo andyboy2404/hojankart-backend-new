@@ -246,6 +246,7 @@ app.post('/submitForm', (req, res) => {
     additionalInfo,
     heardAboutUs,
     referralCode,
+    ReferdbyFullname,
   } = req.body;
 
   const userId = `${fullName.substring(0, 4)}${phone.slice(-4)}`;
@@ -294,7 +295,7 @@ app.post('/submitForm', (req, res) => {
       additionalInfo,
       heardAboutUs,
       referralCode || null,
-      req.body.ReferdbyFullname || null,
+      ReferdbyFullname || null,
     ];
 
     // Insert into main table
@@ -332,7 +333,7 @@ app.post('/api/validateReferral', (req, res) => {
     return res.status(400).json({ valid: false, message: 'Invalid referral code. Code must be exactly 8 letters or numbers.' });
   }
 
-  const sql = 'SELECT fullName FROM bhojankart_signups WHERE userId = ? LIMIT 1';
+  const sql = 'SELECT UserId, fullName FROM bhojankart_signups WHERE UserId = ? LIMIT 1';
   console.log('Executing referral lookup for code:', referralCode);
   db.query(sql, [referralCode], (err, results) => {
     if (err) {
@@ -345,6 +346,7 @@ app.post('/api/validateReferral', (req, res) => {
     }
 
     // Found matching signup - return the full name to display in the modal
+    console.log('Found referrer:', results[0]);
     return res.status(200).json({ valid: true, fullName: results[0].fullName });
   });
 });
