@@ -129,7 +129,8 @@ app.put('/api/signups/:id', (req, res) => {
     extraRoti,
     additionalInfo,
     mealStartDate,
-    isConvertedLeadToBussiness
+    isConvertedLeadToBussiness,
+    referralCode
   } = req.body;
 
   const sql = `UPDATE bhojankart_signups SET
@@ -152,6 +153,8 @@ app.put('/api/signups/:id', (req, res) => {
     dinnerLandmark = ?,
     extraRoti = ?,
     additionalInfo = ?,
+    referralCode = ?,
+    // ReferdbyFullname = ?,
     mealStartDate = ?,
     isConvertedLeadToBussiness = ?
     WHERE id = ?`;
@@ -175,6 +178,8 @@ app.put('/api/signups/:id', (req, res) => {
     dinnerLandmark,
     extraRoti,
     additionalInfo,
+    referralCode || null,
+    // req.body.ReferdbyFullname || null,
     mealStartDate,
     isConvertedLeadToBussiness ? 1 : 0,
     id
@@ -217,9 +222,8 @@ console.log("Executing SQL:", formattedSql);
     }
   });
 });
-
 // ✅ Form Submission Endpoint
-app.post("/submitForm", (req, res) => {
+app.post('/submitForm', (req, res) => {
   const {
     fullName,
     dob,
@@ -241,20 +245,21 @@ app.post("/submitForm", (req, res) => {
     extraRoti,
     additionalInfo,
     heardAboutUs,
+    referralCode,
   } = req.body;
 
   const userId = `${fullName.substring(0, 4)}${phone.slice(-4)}`;
-  const mealsStr = Array.isArray(meals) ? meals.join(", ") : "";
+  const mealsStr = Array.isArray(meals) ? meals.join(', ') : '';
 
   // Check for existing email or phone
   const checkSql = `SELECT id FROM bhojankart_signups WHERE email = ? OR phone = ? LIMIT 1`;
   db.query(checkSql, [email, phone], (checkErr, checkResults) => {
     if (checkErr) {
-      console.error("❌ Error checking for existing signup:", checkErr);
-      return res.status(500).json({ message: "Database error", error: checkErr });
+      console.error('❌ Error checking for existing signup:', checkErr);
+      return res.status(500).json({ message: 'Database error', error: checkErr });
     }
     if (checkResults.length > 0) {
-      return res.status(409).json({ message: "We already have your data. Thank you for signing up!" });
+      return res.status(409).json({ message: 'We already have your data. Thank you for signing up!' });
     }
 
     const sql = `
@@ -262,9 +267,9 @@ app.post("/submitForm", (req, res) => {
         UserId, fullName, dob, age, gender, email, phone, profession, 
         meals, duration, differentPlan, lunchPlan, dinnerPlan, combinedPlan, 
         lunchAddress, lunchLandmark, dinnerAddress, dinnerLandmark, 
-        extraRoti, additionalInfo, heardAboutUs
+        extraRoti, additionalInfo, heardAboutUs, referralCode, ReferdbyFullname
       ) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const values = [
       userId,
@@ -288,56 +293,58 @@ app.post("/submitForm", (req, res) => {
       extraRoti,
       additionalInfo,
       heardAboutUs,
+      referralCode || null,
+      req.body.ReferdbyFullname || null,
     ];
 
     // Insert into main table
     db.query(sql, values, (err, result) => {
       if (err) {
-        console.error("❌ Error inserting form data:", err);
-        return res.status(500).json({ message: "Database error", error: err });
+        console.error('❌ Error inserting form data:', err);
+        return res.status(500).json({ message: 'Database error', error: err });
       }
 
       // Insert into temp table as well
       const tempSql = sql.replace('bhojankart_signups', 'bhojankart_signups_temp');
       db.query(tempSql, values, (tempErr) => {
         if (tempErr) {
-          console.error("❌ Error inserting into temp table:", tempErr);
+          console.error('❌ Error inserting into temp table:', tempErr);
           // Do not fail the main request if temp insert fails
         }
       });
 
       res.status(200).json({
-        message: "Form submitted successfully!",
+        message: 'Form submitted successfully!',
         id: result.insertId,
       });
-
-      // Uncomment to enable email notification
-      // const mailOptions = {
-      //   from: 'anandchourasiya24@gmail.com',
-      //   to: 'anandchourasiya24@gmail.com',
-      //   subject: 'New Signup Form Submitted',
-      //   html: `
-      //     <h2>New Signup Form Submission</h2>
-      //     <table border="1" cellpadding="5" cellspacing="0">
-      //       <tbody>
-      //         ${Object.entries(req.body).map(([key, value]) => `
-      //           <tr>
-      //             <td><strong>${key}</strong></td>
-      //             <td>${Array.isArray(value) ? value.join(', ') : value}</td>
-      //           </tr>
-      //         `).join('')}
-      //       </tbody>
-      //     </table>
-      //   `
-      // };
-
-      // transporter.sendMail(mailOptions, (emailErr, info) => {
-      //   if (emailErr) {
-      //     console.error('❌ Email Error:', emailErr);
-      //     return;
-      //   }
-      //   console.log('📧 Signup Email sent:', info.response);
-      // });
     });
+  });
+});
+
+
+// ✅ Validate Referral API
+// Accepts { referralCode } in body. Referral code must be exactly 8 letters (A-Z).
+app.post('/api/validateReferral', (req, res) => {
+  const { referralCode } = req.body || {};
+
+  // Basic format validation: must be a string of exactly 8 alphanumeric characters (letters or digits)
+  if (!referralCode || typeof referralCode !== 'string' || referralCode.length !== 8 || !/^[A-Za-z0-9]{8}$/.test(referralCode)) {
+    return res.status(400).json({ valid: false, message: 'Invalid referral code. Code must be exactly 8 letters or numbers.' });
+  }
+
+  const sql = 'SELECT fullName FROM bhojankart_signups WHERE userId = ? LIMIT 1';
+  console.log('Executing referral lookup for code:', referralCode);
+  db.query(sql, [referralCode], (err, results) => {
+    if (err) {
+      console.error('❌ Error checking referral code:', err);
+      return res.status(500).json({ valid: false, message: 'Database error', error: err });
+    }
+
+    if (!results || results.length === 0) {
+      return res.status(404).json({ valid: false, message: 'Referral code not found' });
+    }
+
+    // Found matching signup - return the full name to display in the modal
+    return res.status(200).json({ valid: true, fullName: results[0].fullName });
   });
 });
