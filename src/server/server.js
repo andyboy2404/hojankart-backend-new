@@ -129,8 +129,7 @@ app.put('/api/signups/:id', (req, res) => {
     extraRoti,
     additionalInfo,
     mealStartDate,
-    isConvertedLeadToBussiness,
-    referralCode
+    isConvertedLeadToBussiness
   } = req.body;
 
   const sql = `UPDATE bhojankart_signups SET
@@ -153,8 +152,6 @@ app.put('/api/signups/:id', (req, res) => {
     dinnerLandmark = ?,
     extraRoti = ?,
     additionalInfo = ?,
-    referralCode = ?,
-    // ReferdbyFullname = ?,
     mealStartDate = ?,
     isConvertedLeadToBussiness = ?
     WHERE id = ?`;
@@ -178,8 +175,6 @@ app.put('/api/signups/:id', (req, res) => {
     dinnerLandmark,
     extraRoti,
     additionalInfo,
-    referralCode || null,
-    // req.body.ReferdbyFullname || null,
     mealStartDate,
     isConvertedLeadToBussiness ? 1 : 0,
     id
